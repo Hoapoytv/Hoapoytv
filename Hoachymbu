@@ -1,0 +1,228 @@
+
+local ScreenGui = Instance.new("ScreenGui")
+
+local Frame = Instance.new("Frame")
+
+local Frame_2 = Instance.new("Frame")
+
+local TextButton = Instance.new("TextButton")
+
+local TextButton_2 = Instance.new("TextButton")
+
+local TextButton_3 = Instance.new("TextButton")
+
+local TextLabel = Instance.new("TextLabel")
+
+local Players = game.Players
+
+local Player = Players.LocalPlayer
+
+ TextButton.Parent = Frame_2
+
+TextButton.BackgroundColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+TextButton.BorderColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+TextButton.Position = UDim2.new(0.0482275374, 0, 0.0366036035, 0)
+
+TextButton.Size = UDim2.new(0, 300, 0, 300)
+
+TextButton.Font = Enum.Font.SourceSans
+
+TextButton.Text = "HÒA POY TV"
+
+TextButton.TextColor3 = Color3.new(5, 5, 5)
+
+TextButton.TextSize = 25
+
+ 
+ 
+
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+Frame.Parent = ScreenGui
+
+Frame.BackgroundColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+Frame.BorderColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+Frame.Position = UDim2.new(0.00891530514, 0, 0.0973053873, 0)
+
+Frame.Size = UDim2.new(0, 175, 0, 9)
+
+ 
+
+Frame_2.Parent = Frame
+
+Frame_2.BackgroundColor3 = Color3.new(0.196078, 0.196078, 0.196078)
+
+Frame_2.BorderColor3 = Color3.new(0.196078, 0.196078, 0.196078)
+
+Frame_2.Position = UDim2.new(-0.0025132671, 0, 0.999667346, 0)
+
+Frame_2.Size = UDim2.new(0, 175, 0, 164)
+getgenv().Server_Hop = true
+getgenv().Chest_Farm = true
+getgenv().wait_Time = 35 -- Seconds
+
+local placeId = game.PlaceId
+if placeId == 2753915549 or placeId == 4442272183 or placeId == 7449423635 then
+repeat wait() until game:IsLoaded() ~= false
+
+
+local Counter = 0
+local PlaceID = game.PlaceId
+     local AllIDs = {}
+     local foundAnything = ""
+     local actualHour = os.date("!*t").hour
+     local Deleted = false
+
+     local File = pcall(function()
+         AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+     end)
+     if not File then
+         table.insert(AllIDs, actualHour)
+         writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+     end
+    
+     function TPReturner()
+         local Site;
+         if foundAnything == "" then
+             Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+         else
+             Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+         end
+         local ID = ""
+         if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+             foundAnything = Site.nextPageCursor
+         end
+         local num = 0;
+         for i,v in pairs(Site.data) do
+             local Possible = true
+             ID = tostring(v.id)
+             if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                 for _,Existing in pairs(AllIDs) do
+                     if num ~= 0 then
+                         if ID == tostring(Existing) then
+                             Possible = false
+                         end
+                     else
+                         if tonumber(actualHour) ~= tonumber(Existing) then
+                             local delFile = pcall(function()
+                                delfile("NotSameServers.json")
+                                 AllIDs = {}
+                                 table.insert(AllIDs, actualHour)
+                             end)
+                         end
+                     end
+                     num = num + 1
+                 end
+                 if Possible == true then
+                     table.insert(AllIDs, ID)
+                     wait()
+                     pcall(function()
+                         writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                         wait()
+                         game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                     end)
+                     wait(4)
+                 end
+             end
+         end
+     end
+ 
+     function Teleport()
+        while wait() do
+            pcall(function()
+                 TPReturner()
+                 if foundAnything ~= "" then
+                     TPReturner()
+                 end
+            end)
+        end
+     end
+
+     spawn(function()
+        local ohString1 = "SetTeam"
+        local ohString2 = "Pirates"
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(ohString1, ohString2)
+     end)
+
+
+spawn(function()
+   while wait(.8) do
+      if Chest_Farm then
+          pcall(function()
+  
+  for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
+      if string.find(v.Name, "Chest") then
+          print(v.Name)
+          game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = v.CFrame
+          wait(.15)
+      end
+  end
+  game.Players.LocalPlayer.Character.Head:Destroy()
+  for _,v in pairs(game:GetService("Workspace"):GetDescendants()) do
+   if string.find(v.Name, "Chest") and v:IsA("TouchTransmitter") then
+   firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Parent, 0) --0 is touch
+   wait()
+   firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, v.Parent, 1) -- 1 is untouch
+   end
+   end
+  end)
+      end
+  end
+end)
+
+spawn(function()
+    while wait() do
+        if Server_Hop then
+            pcall(function()
+                        wait(wait_Time)
+                        Teleport()
+                        print("Finding new server")
+            end)
+        end
+    end
+end)
+end
+
+TextLabel.Parent = Frame
+
+TextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+
+TextLabel.BackgroundTransparency = 1
+
+TextLabel.BorderColor3 = Color3.new(0.207843, 0.207843, 0.207843)
+
+TextLabel.Position = UDim2.new(-0.299656123, 0, 19.1475391, 0)
+
+TextLabel.Size = UDim2.new(0, 175, 0, 27)
+
+TextLabel.Font = Enum.Font.SourceSans
+
+TextLabel.Text = "KỊCH BẢN ĐƯỢC LÀM BẢN HÒA XINH GÁI"
+
+TextLabel.TextColor3 = Color3.new(0, 76, 0)
+
+TextLabel.TextSize =12
+
+TextButton_2.Parent = Frame_2
+
+TextButton_2.BackgroundColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+TextButton_2.BorderColor3 = Color3.new(0.0941176, 0.309804, 0.713726)
+
+TextButton_2.Position = UDim2.new(0.0482275374, 0, 0.353676766, 0)
+
+TextButton_2.Size = UDim2.new(0, 299, 0, 46)
+
+TextButton_2.Font = Enum.Font.SourceSans
+
+TextButton_2.Text = "ROBUXSKY.CF"
+
+TextButton_2.TextColor3 = Color3.new(0, 77, 0)
+
+TextButton_2.TextSize = 30
+
+
